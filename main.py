@@ -1,6 +1,8 @@
 import tensorflow as tf
 
-from tasks import *
+from ntm_cell import NTMCell
+from ntm import NTM
+from tasks.copy import copy_train, copy
 from utils import pp
 
 flags = tf.app.flags
@@ -36,11 +38,11 @@ def main(_):
 
             ntm.load(FLAGS.checkpoint_dir, 'copy')
 
-            copy(ntm, FLAGS.test_max_length*1/3, sess)
+            copy(ntm, int(FLAGS.test_max_length*1/3), sess)
             print
-            copy(ntm, FLAGS.test_max_length*2/3, sess)
+            copy(ntm, int(FLAGS.test_max_length*2/3), sess)
             print
-            copy(ntm, FLAGS.test_max_length*3/3, sess)
+            copy(ntm, int(FLAGS.test_max_length*3/3), sess)
         elif FLAGS.task == 'recall':
             pass
 

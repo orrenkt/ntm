@@ -7,9 +7,9 @@ eps = 1e-12
 pp = pprint.PrettyPrinter()
 
 try:
-    xrange
+    range
 except NameError:
-    xrange = range
+    range = range
 
 def progress(progress):
     barLength = 20 # Modify this to change the length of the progress bar
@@ -47,7 +47,7 @@ def gather(m_or_v, idx):
 def argmax(x):
     index = 0
     max_num = x[index]
-    for idx in xrange(1, len(x)-1):
+    for idx in range(1, len(x)-1):
         if x[idx] > max_num:
             index = idx
             max_num = x[idx]

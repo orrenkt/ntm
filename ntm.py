@@ -93,7 +93,7 @@ class NTM(object):
             zeros = np.zeros(self.cell.input_dim, dtype=np.float32)
 
             tf.get_variable_scope().reuse_variables()
-            for seq_length in xrange(1, self.max_length + 1):
+            for seq_length in range(1, self.max_length + 1):
                 progress(seq_length/float(self.max_length))
 
                 input_ = tf.placeholder(tf.float32, [self.cell.input_dim],
@@ -118,7 +118,7 @@ class NTM(object):
                 if not forward_only:
                     # present targets
                     outputs = []
-                    for _ in xrange(seq_length):
+                    for _ in range(seq_length):
                         output, state = self.cell(zeros, state)
                         self.save_state(state, seq_length, is_output=True)
                         outputs.append(output)
@@ -126,7 +126,7 @@ class NTM(object):
                     self.outputs[seq_length] = outputs
 
             if not forward_only:
-                for seq_length in xrange(self.min_length, self.max_length + 1):
+                for seq_length in range(self.min_length, self.max_length + 1):
                     print(" [*] Building a loss model for seq_length %s" % seq_length)
 
                     loss = sequence_loss(logits=self.outputs[seq_length],
@@ -147,7 +147,7 @@ class NTM(object):
 
                     grads = []
                     for grad in tf.gradients(loss, self.params):
-                        if grad:
+                        if grad is not None:
                             grads.append(tf.clip_by_value(grad,
                                                           self.min_grad,
                                                           self.max_grad))
@@ -163,7 +163,7 @@ class NTM(object):
         print(" [*] Build a NTM model finished")
 
     def get_outputs(self, seq_length):
-        if not self.outputs.has_key(seq_length):
+        if seq_length not in self.outputs:
             with tf.variable_scope(self.scope):
                 tf.get_variable_scope().reuse_variables()
 
@@ -171,7 +171,7 @@ class NTM(object):
                 state = self.prev_states[seq_length]
 
                 outputs = []
-                for _ in xrange(seq_length):
+                for _ in range(seq_length):
                     output, state = self.cell(zeros, state)
                     self.save_state(state, seq_length, is_output=True)
                     outputs.append(output)
@@ -180,16 +180,16 @@ class NTM(object):
         return self.outputs[seq_length]
 
     def get_loss(self, seq_length):
-        if not self.outputs.has_key(seq_length):
+        if seq_length not in self.outputs:
             self.get_outputs(seq_length)
 
-        if not self.losses.has_key(seq_length):
+        if seq_length not in self.losses:
             loss = sequence_loss(logits=self.outputs[seq_length],
-                                targets=self.true_outputs[0:seq_length],
-                                weights=[1] * seq_length,
-                                average_across_timesteps=False,
-                                average_across_batch=False,
-                                softmax_loss_function=\
+                                 targets=self.true_outputs[0:seq_length],
+                                 weights=[1] * seq_length,
+                                 average_across_timesteps=False,
+                                 average_across_batch=False,
+                                 softmax_loss_function=\
                                     binary_cross_entropy_with_logits)
 
             self.losses[seq_length] = loss 
@@ -198,19 +198,19 @@ class NTM(object):
     def get_output_states(self, seq_length):
         zeros = np.zeros(self.cell.input_dim, dtype=np.float32)
 
-        if not self.output_states.has_key(seq_length):
+        if seq_length not in self.output_states: 
             with tf.variable_scope(self.scope):
                 tf.get_variable_scope().reuse_variables()
 
                 outputs = []
                 state = self.prev_states[seq_length]
 
-                for _ in xrange(seq_length):
+                for _ in range(seq_length):
                     output, state = self.cell(zeros, state)
                     self.save_state(state, seq_length, is_output=True)
                     outputs.append(output)
                 self.outputs[seq_length] = outputs
-        return self.output_states[seq_length]
+            return self.output_states[seq_length]
 
     @property
     def loss(self):
@@ -227,7 +227,7 @@ class NTM(object):
             state_to_add = self.input_states
 
         if to:
-            for idx in xrange(from_, to+1):
+            for idx in range(from_, to+1):
                 state_to_add[idx].append(state)
         else:
             state_to_add[from_].append(state)

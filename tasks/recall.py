@@ -77,7 +77,7 @@ def recall_train(config):
     print(" [*] Initialization finished")
 
     start_time = time.time()
-    for idx in xrange(config.epoch):
+    for idx in range(config.epoch):
         seq_length = randint(config.min_length, config.max_length)
         seq = generate_recall_sequence(seq_length, config.input_dim - 2)
 
@@ -106,7 +106,7 @@ def recall_train(config):
 
 def generate_recall_sequence(num_items, item_length, input_dim):
     items = []
-    for idx in xrange(num_items):
+    for idx in range(num_items):
         item = np.random.rand(item_length, input_dim).round()
         item[0:item_length+1, 0:2] = 0
         items.append(item)
